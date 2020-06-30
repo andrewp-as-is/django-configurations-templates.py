@@ -1,13 +1,7 @@
-from setuptools import setup
+import setuptools
 
-setup(
+setuptools.setup(
     name='django-configurations-templates',
-    version='2020.6.8',
-    install_requires=[
-        'django-configurations',
-        'setuptools',
-    ],
-    packages=[
-        'django_configurations_templates',
-    ],
+    install_requires=open('requirements.txt').read().splitlines(),
+    packages=setuptools.find_packages()
 )
