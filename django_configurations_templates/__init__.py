@@ -2,14 +2,24 @@ import os
 
 from configurations import Configuration, values
 
+
 def getlist(path):
     return list(filter(
-        None,map(lambda s:s.strip(),open(path).read().splitlines() if path else [])
+        None, map(lambda s: s.strip(), open(
+            path).read().splitlines() if path else [])
     ))
 
-class TemplatesConfiguration(Configuration):
+
+def getlines(path):
+    if not path:
+        return []
+    return list(filter(None, open(path).read().splitlines()))
+
+
+class TemplatesMixin:
     BASE_DIR = os.getcwd()
-    TEMPLATES_BACKEND = values.Value('django.template.backends.django.DjangoTemplates')
+    TEMPLATES_BACKEND = values.Value(
+        'django.template.backends.django.DjangoTemplates')
     TEMPLATES_DIRS = values.ListValue([])
     TEMPLATES_APP_DIRS = values.BooleanValue(True)
     TEMPLATES_OPTIONS = {}
@@ -19,11 +29,12 @@ class TemplatesConfiguration(Configuration):
 
     @classmethod
     def setup(cls):
-        super(TemplatesConfiguration, cls).setup()
-        path = os.path.join(cls.BASE_DIR,"templates")
+        super(TemplatesMixin, cls).setup()
+        path = os.path.join(cls.BASE_DIR, "templates")
         if not cls.TEMPLATES_DIRS and os.path.exists(path):
             cls.TEMPLATES_DIRS = [path]
-        cls.TEMPLATES_CONTEXT_PROCESSORS = getlist(cls.TEMPLATES_CONTEXT_PROCESSORS_FILE)
+        cls.TEMPLATES_CONTEXT_PROCESSORS = getlines(
+            cls.TEMPLATES_CONTEXT_PROCESSORS_FILE)
         if not cls.TEMPLATES_OPTIONS:
             cls.TEMPLATES_OPTIONS = {
                 'context_processors': cls.TEMPLATES_CONTEXT_PROCESSORS
@@ -32,7 +43,7 @@ class TemplatesConfiguration(Configuration):
                 cls.TEMPLATES_OPTIONS['loaders'] = cls.TEMPLATES_LOADERS
         if cls.TEMPLATES_LOADERS:
             cls.TEMPLATES_APP_DIRS = False
-        if not hasattr(cls,'TEMPLATES') or not cls.TEMPLATES:
+        if not hasattr(cls, 'TEMPLATES') or not cls.TEMPLATES:
             cls.TEMPLATES = [{}]
         if 'BACKEND' not in cls.TEMPLATES[0]:
             cls.TEMPLATES[0]['BACKEND'] = cls.TEMPLATES_BACKEND
@@ -43,7 +54,11 @@ class TemplatesConfiguration(Configuration):
         if 'OPTIONS' not in cls.TEMPLATES[0]:
             cls.TEMPLATES[0]['OPTIONS'] = cls.TEMPLATES_OPTIONS
         if cls.TEMPLATES_CONTEXT_PROCESSORS and 'context_processors' not in cls.TEMPLATES[0]['OPTIONS']:
-            cls.TEMPLATES[0]['OPTIONS']['context_processors'] = cls.TEMPLATES_CONTEXT_PROCESSORS
+            cls.TEMPLATES[0]['OPTIONS'][
+                'context_processors'] = cls.TEMPLATES_CONTEXT_PROCESSORS
         if cls.TEMPLATES_LOADERS and 'loaders' not in cls.TEMPLATES[0]['OPTIONS']:
             cls.TEMPLATES[0]['OPTIONS']['loaders'] = cls.TEMPLATES_LOADERS
 
+
+class TemplatesConfiguration(TemplatesMixin, Configuration):
+    pass

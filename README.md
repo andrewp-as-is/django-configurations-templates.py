@@ -25,21 +25,22 @@ key | default value | env
 
 ##### `settings.py`
 ```python
-from django_configurations_templates import TemplatesConfiguration
+from configurations import Configuration
+from django_configurations_templates import TemplatesMixin
 
-class Base(TemplatesConfiguration,...):
+class Base(TemplatesMixin,Configuration):
     ...
 ```
 
 ```python
-class Base(TemplatesConfiguration,...):
+class Base(TemplatesMixin,Configuration):
     TEMPLATES_CONTEXT_PROCESSORS = [
         'django.template.context_processors.request'
     ]
 ```
 
 ```python
-class Base(TemplatesConfiguration,...):
+class Base(TemplatesMixin,Configuration):
     TEMPLATES_CONTEXT_PROCESSORS_FILE='context_processors.txt'
 ```
 
